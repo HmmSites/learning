@@ -263,24 +263,59 @@
   };
 
   // Welche Generatoren passen zu welcher Jahrgangsstufe?
-  function generatorsFor(grade) {
-    var g = [
+  // Ordnet jedem Rechengenerator Stichwörter zu, damit die automatischen
+  // Aufgaben zum jeweiligen Thema passen und nicht quer zum Lehrplan stehen.
+  var GENERATOR_KEYWORDS = {
+    grundrechnen: ["grundrechen", "rechnen", "natuerliche zahl", "zahlenraum", "kopfrechnen", "geld"],
+    runden: ["runden", "ueberschlag", "schaetzen", "dezimal"],
+    flaeche: ["flaeche", "umfang", "rechteck", "quadrat", "viereck", "geometrie"],
+    bruch: ["bruch", "brueche", "bruchrechn", "rationale zahl", "dezimalbruch", "bruchteil"],
+    prozent: ["prozent", "rabatt", "anteil", "verhaeltnis"],
+    gleichung: ["gleichung", "terme", "termumformung", "lineare", "loesen", "variable"],
+    potenz: ["potenz", "potenzgesetz", "potenzregel", "exponent", "wurzel"],
+    pythagoras: ["pythagoras", "satz des", "rechtwinklig", "hypotenuse"],
+    kreis: ["kreis", "zylinder", "kugel", "kegel", "radius", "durchmesser", "koerper"],
+    funktion: ["funktion", "graph", "steigung", "ableit", "kurvendiskussion", "analysis", "gerade"],
+    zins: ["zins", "kapital", "spar", "kredit", "wirtschaft", "rechnungswesen"],
+    wahrscheinlichkeit: ["wahrscheinlich", "zufall", "stochastik", "statistik", "daten", "mittelwert"],
+    trigonometrie: ["trigonometrie", "sinus", "kosinus", "tangens", "winkel", "dreieck"],
+    exponential: ["exponential", "wachstum", "zerfall", "logarithmus", "e-funktion"],
+  };
+
+  function themeText(theme) {
+    var parts = [theme.t || "", theme.d || "", theme.l || ""];
+    (theme.f || []).forEach(function (f) { parts.push(f[0], f[1]); });
+    (theme.q || []).forEach(function (q) { parts.push(q.q || ""); });
+    return parts.join(" ").toLowerCase();
+  }
+
+  // Wählt nur Generatoren, deren Stichwörter im Thema vorkommen. Passt keiner,
+  // bleibt der Übungssatz rein thematisch (keine fachfremden Rechenaufgaben).
+  function generatorsFor(grade, theme) {
+    var byGrade = [
       "grundrechnen", "runden", "flaeche", "bruch", "prozent", "gleichung",
       "potenz", "pythagoras", "kreis", "funktion", "zins", "wahrscheinlichkeit",
       "trigonometrie", "exponential"
     ];
-    if (grade <= 5) return ["grundrechnen", "runden", "flaeche"];
-    if (grade === 6) return ["grundrechnen", "runden", "bruch", "flaeche", "prozent"];
-    if (grade === 7) return ["grundrechnen", "bruch", "prozent", "gleichung", "flaeche"];
-    if (grade === 8) return ["gleichung", "potenz", "funktion", "kreis", "wahrscheinlichkeit"];
-    if (grade === 9) return ["gleichung", "potenz", "pythagoras", "kreis", "funktion", "trigonometrie"];
-    return ["funktion", "potenz", "exponential", "zins", "wahrscheinlichkeit", "trigonometrie"];
+    var allowed = byGrade.slice();
+    if (grade <= 5) allowed = ["grundrechnen", "runden", "flaeche"];
+    else if (grade === 6) allowed = ["grundrechnen", "runden", "bruch", "flaeche", "prozent"];
+    else if (grade === 7) allowed = ["grundrechnen", "bruch", "prozent", "gleichung", "flaeche"];
+    else if (grade === 8) allowed = ["gleichung", "potenz", "funktion", "kreis", "wahrscheinlichkeit"];
+    else if (grade === 9) allowed = ["gleichung", "potenz", "pythagoras", "kreis", "funktion", "trigonometrie"];
+
+    if (!theme) return allowed;
+    var hay = themeText(theme);
+    var matched = allowed.filter(function (name) {
+      return GENERATOR_KEYWORDS[name].some(function (kw) { return hay.indexOf(kw) !== -1; });
+    });
+    return matched;
   }
 
-  function buildGeneratorTasks(subjectKey, grade, count, rnd) {
-    var isMath = subjectKey === "mathematik";
-    if (!isMath) return [];
-    var names = generatorsFor(grade);
+  function buildGeneratorTasks(subjectKey, grade, count, rnd, theme) {
+    if (subjectKey !== "mathematik") return [];
+    var names = generatorsFor(grade, theme);
+    if (!names.length) return [];
     var out = [];
     for (var i = 0; i < count; i++) {
       var name = names[Math.floor(rnd() * names.length)];
@@ -328,8 +363,8 @@
     var m = buildMatchFromFacts(theme.f || [], rnd);
     if (m) tasks.push(withId(m, "match"));
 
-    // 3. Mathe-Generatoren
-    buildGeneratorTasks(subjectKey, grade, subjectKey === "mathematik" ? 4 : 0, rnd)
+    // 3. Mathe-Generatoren (nur wenn sie zum Thema passen)
+    buildGeneratorTasks(subjectKey, grade, 3, rnd, theme)
       .forEach(function (t) { tasks.push(t); });
 
     // 4. Fallback: sehr schlanke Themen bekommen mindestens eine Aufgabe

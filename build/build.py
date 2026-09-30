@@ -3,12 +3,22 @@
 import json, os
 
 SCHOOLS = {
+ "grundschule": {"name":"Grundschule","short":"GS","deco":"\U0001F9F1","color":"#c8442f","klassen":[1,2,3,4],
+   "info":"Jahrgangsstufen 1 bis 4. Grundlegende Bildung in Deutsch, Mathematik und Heimat- und Sachunterricht; ab Jgst. 3 Englisch."},
+ "mittelschule": {"name":"Mittelschule","short":"MS","deco":"\U0001F527","color":"#1f6f4a","klassen":[5,6,7,8,9,10],
+   "info":"Früher Hauptschule. Führt zum Mittleren Schulabschluss (M-Zug ab Jgst. 7). Leitfach Wirtschaft und Beruf, Wahlpflichtfächer Technik, Wirtschaft und Kommunikation sowie Ernährung und Soziales."},
+ "foerderschule": {"name":"Förderschule","short":"FS","deco":"\U0001F91D","color":"#6b5b95","klassen":[1,2,3,4,5,6,7,8,9],
+   "info":"Förderung nach individuellem Bedarf, gegliedert nach Förderschwerpunkten (Lernen, Sprache, emotionale und soziale Entwicklung, körperliche und motorische Entwicklung, Sehen, Hören)."},
  "realschule": {"name":"Realschule","short":"RS","deco":"\U0001F4D0","color":"#12386b","klassen":[5,6,7,8,9,10],
    "info":"Sechsstufig mit Wahlpflichtfächergruppen ab Jgst. 7: I naturwissenschaftlich-technisch, II wirtschaftswissenschaftlich, IIIa Französisch, IIIb sozialwissenschaftlich."},
- "gymnasium": {"name":"Gymnasium","short":"GYM","deco":"\U0001F3DB","color":"#5a2d82","klassen":[5,6,7,8,9,10],
-   "info":"Neunjähriges Gymnasium. Natur und Technik in der Unterstufe, ab Jgst. 8 getrennte Fächer Biologie, Chemie, Physik, Informatik; Fremdsprachenfolge Englisch/Latein/Französisch."},
- "mittelschule": {"name":"Mittelschule","short":"MS","deco":"\U0001F527","color":"#1f6f4a","klassen":[5,6,7,8,9,10],
-   "info":"Führt zum Mittleren Schulabschluss (M-Zug ab Jgst. 7). Leitfach Wirtschaft und Beruf, berufsorientierende Wahlpflichtfächer Technik, Wirtschaft und Kommunikation sowie Ernährung und Soziales."},
+ "gymnasium": {"name":"Gymnasium","short":"GYM","deco":"\U0001F3DB","color":"#5a2d82","klassen":[5,6,7,8,9,10,11,12],
+   "info":"Neunjähriges Gymnasium bis zum Abitur (Jgst. 5–12). Natur und Technik in der Unterstufe, ab Jgst. 8 getrennte Fächer Biologie, Chemie, Physik, Informatik; Oberstufe mit Q11 und Q12."},
+ "wirtschaftsschule": {"name":"Wirtschaftsschule","short":"WS","deco":"\U0001F4BC","color":"#8a5a2b","klassen":[6,7,8,9,10],
+   "info":"Führt zum Mittleren Schulabschluss mit wirtschaftlichem Profil. Fächer wie Betriebswirtschaftliche Steuerung und Kontrolle, Rechnungswesen und Wirtschaftsinformatik."},
+ "fachoberschule": {"name":"Fachoberschule","short":"FOS","deco":"\U0001F393","color":"#1f5fa8","klassen":[11,12],
+   "info":"Führt zur Fachhochschulreife. Ausbildungsrichtungen Technik, Wirtschaft und Verwaltung, Sozialwesen, Gesundheit sowie Agrarwirtschaft, Bio- und Umwelttechnologie."},
+ "berufsoberschule": {"name":"Berufsoberschule","short":"BOS","deco":"\U0001F6E0","color":"#2f7d78","klassen":[12,13],
+   "info":"Führt Berufserfahrene zur Fachhochschulreife und zum Abitur. Ausbildungsrichtungen Technik, Wirtschaft und Verwaltung, Sozialwesen, Gesundheit."},
 }
 
 S = {}
