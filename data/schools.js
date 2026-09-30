@@ -1,0 +1,7 @@
+/* schools.js – Schularten-Stammdaten (erzeugt aus build.py). */
+window.SCHOOLS = {
+  "realschule":{name:"Realschule", short:"RS", deco:"📐", color:"#12386b", info:"Sechsstufig mit Wahlpflichtfächergruppen ab Jgst. 7: I naturwissenschaftlich-technisch, II wirtschaftswissenschaftlich, IIIa Französisch, IIIb sozialwissenschaftlich.", klassen:[5, 6, 7, 8, 9, 10], subjects:["deutsch", "mathematik", "englisch", "biologie", "geschichte", "erdkunde", "physik", "chemie", "religion", "kunst", "musik", "sport", "informatik", "wirtschaft", "franzoesisch"]},
+  "gymnasium":{name:"Gymnasium", short:"GYM", deco:"🏛", color:"#5a2d82", info:"Neunjähriges Gymnasium. Natur und Technik in der Unterstufe, ab Jgst. 8 getrennte Fächer Biologie, Chemie, Physik, Informatik; Fremdsprachenfolge Englisch/Latein/Französisch.", klassen:[5, 6, 7, 8, 9, 10], subjects:["deutsch", "mathematik", "englisch", "latein", "franzoesisch", "natur", "biologie", "chemie", "physik", "geschichte", "erdkunde", "religion", "kunst", "musik", "sport", "informatik", "wirtschaft"]},
+  "mittelschule":{name:"Mittelschule", short:"MS", deco:"🔧", color:"#1f6f4a", info:"Führt zum Mittleren Schulabschluss (M-Zug ab Jgst. 7). Leitfach Wirtschaft und Beruf, berufsorientierende Wahlpflichtfächer Technik, Wirtschaft und Kommunikation sowie Ernährung und Soziales.", klassen:[5, 6, 7, 8, 9, 10], subjects:["deutsch", "mathematik", "englisch", "wib", "nt", "gpg", "technik", "wu_k", "es", "religion", "kunst", "musik", "sport"]}
+};
+window.SCHOOL_ORDER = ["realschule", "gymnasium", "mittelschule"];
