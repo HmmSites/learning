@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LehrplanPLUS Trainer – Übungen für Klasse 5–10 (Bayern)</title>
+<meta name="description" content="Kostenlose Übungen zu allen Fächern und Themen des LehrplanPLUS Bayern für Realschule, Gymnasium und Mittelschule – Klasse 5 bis 10.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,800;1,9..144,500&family=Karla:ital,wght@0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📚</text></svg>">
+</head>
+<body>
+<div class="paper-grain" aria-hidden="true"></div>
+
+<header class="topbar">
+  <a class="brand" href="#/" aria-label="Startseite">
+    <span class="brand-mark">PLUS</span>
+    <span class="brand-text">
+      <strong>Lehrplan<em>Trainer</em></strong>
+      <small>Bayern · Klasse 5–10</small>
+    </span>
+  </a>
+  <div class="topbar-right">
+    <div class="hud" id="hud" title="Dein Fortschritt">
+      <div class="hud-item"><span id="hud-xp">0</span><small>XP</small></div>
+      <div class="hud-item"><span id="hud-done">0</span><small>gelöst</small></div>
+      <div class="hud-item"><span id="hud-rate">–</span><small>Quote</small></div>
+    </div>
+    <button class="icon-btn" id="btn-help" title="Hilfe" aria-label="Hilfe">?</button>
+    <button class="icon-btn" id="btn-reset" title="Fortschritt zurücksetzen" aria-label="Fortschritt zurücksetzen">↺</button>
+  </div>
+</header>
+
+<!-- ============ AUSWAHL: Schule / Klasse / Fach ============ -->
+<section class="chooser" id="chooser" aria-label="Auswahl von Schule, Klasse und Fach">
+  <div class="chooser-inner">
+    <div class="step" data-step="schule">
+      <div class="step-label"><span>1</span> Schulart</div>
+      <div class="chip-row" id="chip-schule" role="tablist" aria-label="Schulart"></div>
+    </div>
+    <div class="step" data-step="klasse">
+      <div class="step-label"><span>2</span> Jahrgangsstufe</div>
+      <div class="chip-row" id="chip-klasse" role="tablist" aria-label="Jahrgangsstufe"></div>
+    </div>
+    <div class="step" data-step="fach">
+      <div class="step-label"><span>3</span> Fach</div>
+      <div class="chip-row fach-row" id="chip-fach" role="tablist" aria-label="Fach"></div>
+    </div>
+  </div>
+  <div class="chooser-tail">
+    <label class="search-wrap">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M16.5 16.5 21 21"/></svg>
+      <input type="search" id="search" placeholder="Thema oder Stichwort suchen … (z. B. Bruch, Satzglieder, Photosynthese)" autocomplete="off">
+    </label>
+    <div class="quickstats" id="quickstats"></div>
+  </div>
+</section>
+
+<main id="main" tabindex="-1">
+  <div id="view" class="view"><!-- von app.js gerendert --></div>
+</main>
+
+<footer class="footer">
+  <p><strong>LehrplanTrainer</strong> – inoffizielle Übungsseite auf Basis der bayerischen Lehrpläne.</p>
+  <p>Quelle der Lehrplanstruktur: <a href="https://www.lehrplanplus.bayern.de" target="_blank" rel="noopener">lehrplanplus.bayern.de</a> · Staatsinstitut für Schulqualität und Bildungsforschung (ISB).</p>
+  <p class="muted">Alle Aufgaben sind didaktisch aufbereitete Übungen und ersetzen nicht den Unterricht oder die Original-Lehrpläne.</p>
+</footer>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<div class="modal" id="modal" hidden>
+  <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <button class="modal-close" id="modal-close" aria-label="Schließen">×</button>
+    <div id="modal-body"></div>
+  </div>
+</div>
+
+<script src="data/schools.js"></script>
+<script src="data/subjects-realschule.js"></script>
+<script src="data/subjects-gymnasium.js"></script>
+<script src="data/subjects-mittelschule.js"></script>
+<script src="data/curriculum.js"></script>
+<script src="js/engine.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
