@@ -36,6 +36,93 @@
 
   --fach-color:var(--pen);
   --maxw:1180px;
+
+  /* Zustandsflächen (Korrekturrot / Klebezettel-Gelb), hell */
+  --wrong-bg:#f8ddd6;
+  --yellow-ink:#7d6414;
+  --scrim:rgba(27,51,80,.5);
+  --on-accent:#fff;
+
+  /* Feste Marke, bleibt in beiden Modi gleich */
+  --red-ink:#c8442f;
+}
+
+/* ---------------------------------------------------------------------
+   Dunkelmodus – dieselbe Heft-Ästhetik auf dunklem Papier.
+   Umschaltbar über <html data-theme="dark">; gesteuert von js/theme.js.
+   --------------------------------------------------------------------- */
+[data-theme="dark"]{
+  --paper:#161b26;
+  --paper-2:#1e2532;
+  --paper-3:#27303f;
+  --line:rgba(203,220,242,.15);
+  --line-strong:rgba(203,220,242,.30);
+  --grid:rgba(120,168,226,.08);
+
+  --ink:#e8eef8;
+  --ink-soft:#b5c3d8;
+  --ink-faint:#8b9bb3;
+  --pen:#7fb2f0;
+
+  --red:#e2705c;
+  --red-soft:#8d3f33;
+  --yellow:#d9a93a;
+  --yellow-soft:#463818;
+  --green:#5faa78;
+  --green-soft:#22392a;
+  --violet:#9c8cc9;
+  --teal:#4ba39c;
+
+  --shadow-1:0 1px 0 rgba(0,0,0,.35), 0 6px 18px -10px rgba(0,0,0,.7);
+  --shadow-2:0 2px 0 rgba(0,0,0,.4), 0 18px 40px -22px rgba(0,0,0,.85);
+
+  --wrong-bg:#43221c;
+  --yellow-ink:#e7c368;
+  --scrim:rgba(4,8,15,.68);
+  --on-accent:#101722;
+  color-scheme:dark;
+}
+
+/* Dynamische Fach- und Schulfarben (Tintenblau-Töne) sind auf dunklem
+   Papier zu dunkel. Sie werden im Dunkelmodus aufgehellt und für Text
+   zusätzlich kontrastverstärkt – ohne die Farbwerte in den Daten zu ändern.
+
+   Achtung: app.js setzt --fach-raw/--schul-raw inline auf den Trägerelementen.
+   Inline-Variablen gewinnen gegen jede CSS-Regel, deshalb wird die fertige
+   --fach-color/--schul-color auf denselben Elementen neu abgeleitet. */
+[data-theme="dark"]{
+  --fach-color:color-mix(in srgb, var(--fach-raw, var(--pen)) 58%, #ffffff);
+  --schul-color:color-mix(in srgb, var(--schul-raw, var(--ink)) 58%, #ffffff);
+}
+[data-theme="dark"] .theme-card,
+[data-theme="dark"] .school-card,
+[data-theme="dark"] .task-no,
+[data-theme="dark"] .chip[aria-selected="true"],
+[data-theme="dark"] .chip.fach[aria-selected="true"]{
+  --fach-color:color-mix(in srgb, var(--fach-raw, var(--pen)) 58%, #ffffff);
+  --schul-color:color-mix(in srgb, var(--schul-raw, var(--ink)) 58%, #ffffff);
+}
+/* Flächen mit weißer Schrift: Weiß auf hell aufgehelltem Grund wäre zu blass. */
+[data-theme="dark"] .task-no,
+[data-theme="dark"] .chip[aria-selected="true"],
+[data-theme="dark"] .chip.fach[aria-selected="true"]{
+  --fach-color:color-mix(in srgb, var(--fach-raw, var(--pen)) 42%, #ffffff);
+}
+/* Textfarben brauchen mehr Kontrast als Flächen. */
+[data-theme="dark"] .hero h1 .accent,
+[data-theme="dark"] .crumbs a,
+[data-theme="dark"] .order-item .num,
+[data-theme="dark"] .result-card .score{
+  --fach-color:color-mix(in srgb, var(--fach-raw, var(--pen)) 72%, #ffffff);
+}
+[data-theme="dark"] .footer a,
+[data-theme="dark"] .feedback .sol,
+[data-theme="dark"] .hud-item span,
+[data-theme="dark"] .totals b,
+[data-theme="dark"] .quickstats b,
+[data-theme="dark"] .badge b,
+[data-theme="dark"] .theme-card .count{
+  --pen:color-mix(in srgb, var(--pen) 80%, #ffffff);
 }
 
 *{box-sizing:border-box}
@@ -82,7 +169,7 @@ body{
 }
 .brand-text{display:flex;flex-direction:column;line-height:1.05}
 .brand-text strong{font-family:"Fraunces",serif;font-weight:800;font-size:21px;letter-spacing:-.02em}
-.brand-text em{font-style:italic;color:var(--red)}
+.brand-text em{font-style:italic;color:var(--red-ink)}
 .brand-text small{font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-faint)}
 
 .topbar-right{display:flex;align-items:center;gap:10px}
@@ -105,6 +192,21 @@ body{
   transition:transform .12s, background .15s, color .15s;
 }
 .ghost-btn:hover{background:var(--ink);color:var(--paper-2);transform:translateY(-2px)}
+
+/* Hell/Dunkel-Schalter */
+.theme-switch{
+  display:inline-flex;align-items:center;gap:2px;padding:3px;
+  border:1.5px solid var(--line-strong);border-radius:999px;background:var(--paper-2);
+  box-shadow:var(--shadow-1);
+}
+.theme-switch button{
+  width:30px;height:30px;border:0;border-radius:50%;cursor:pointer;
+  background:transparent;color:var(--ink-faint);font-size:15px;line-height:1;
+  display:grid;place-items:center;
+  transition:background .15s, color .15s, transform .15s;
+}
+.theme-switch button:hover{color:var(--ink);transform:translateY(-1px)}
+.theme-switch button[aria-pressed="true"]{background:var(--ink);color:var(--paper-2)}
 
 /* ===================== Willkommen (Startseite) ===================== */
 .welcome{
@@ -255,7 +357,7 @@ body{
 .task-head{display:flex;gap:12px;align-items:flex-start;margin-bottom:12px}
 .task-no{
   flex:none;font-family:"JetBrains Mono",monospace;font-weight:600;font-size:13px;
-  background:var(--fach-color);color:#fff;border-radius:7px;padding:4px 9px;transform:rotate(-2deg);
+  background:var(--fach-color);color:var(--on-accent);border-radius:7px;padding:4px 9px;transform:rotate(-2deg);
 }
 .task-q{font-size:16.5px;line-height:1.55}
 .task-q code,.mono{font-family:"JetBrains Mono",monospace;font-size:.94em;background:var(--paper-3);padding:1px 6px;border-radius:5px}
@@ -275,9 +377,9 @@ body{
   border:1.5px solid var(--line-strong);font-family:"JetBrains Mono",monospace;font-size:12.5px;font-weight:600;
 }
 .opt.correct{background:var(--green-soft);border-color:var(--green)}
-.opt.correct .key{background:var(--green);color:#fff;border-color:var(--green)}
-.opt.wrong{background:#f8ddd6;border-color:var(--red);text-decoration:line-through;text-decoration-color:var(--red-soft)}
-.opt.wrong .key{background:var(--red);color:#fff;border-color:var(--red)}
+.opt.correct .key{background:var(--green);color:var(--on-accent);border-color:var(--green)}
+.opt.wrong{background:var(--wrong-bg);border-color:var(--red);text-decoration:line-through;text-decoration-color:var(--red-soft)}
+.opt.wrong .key{background:var(--red);color:var(--on-accent);border-color:var(--red)}
 .opt[disabled]{cursor:default}
 .opt[disabled]:hover{transform:none}
 
@@ -290,7 +392,7 @@ body{
 }
 .input-row input:focus{border-color:var(--fach-color);box-shadow:0 0 0 3px color-mix(in srgb,var(--fach-color) 16%,transparent)}
 .input-row input.correct{border-color:var(--green);background:var(--green-soft)}
-.input-row input.wrong{border-color:var(--red);background:#f8ddd6}
+.input-row input.wrong{border-color:var(--red);background:var(--wrong-bg)}
 .unit{font-family:"JetBrains Mono",monospace;color:var(--ink-soft)}
 
 /* Buttons */
@@ -315,7 +417,7 @@ body{
   border:1.5px solid;animation:rise .3s both;
 }
 .feedback.ok{background:var(--green-soft);border-color:var(--green)}
-.feedback.no{background:#f8ddd6;border-color:var(--red)}
+.feedback.no{background:var(--wrong-bg);border-color:var(--red)}
 .feedback .fb-title{font-weight:700;display:flex;align-items:center;gap:8px;margin-bottom:4px}
 .feedback.ok .fb-title{color:var(--green)}
 .feedback.no .fb-title{color:var(--red)}
@@ -331,7 +433,7 @@ body{
 }
 .gaps input:focus{border-color:var(--fach-color);background:color-mix(in srgb,var(--fach-color) 8%,transparent)}
 .gaps input.correct{border-color:var(--green);color:var(--green);background:var(--green-soft)}
-.gaps input.wrong{border-color:var(--red);color:var(--red);background:#f8ddd6}
+.gaps input.wrong{border-color:var(--red);color:var(--red);background:var(--wrong-bg)}
 
 .match-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:4px}
 .match-col{display:flex;flex-direction:column;gap:8px}
@@ -344,7 +446,7 @@ body{
 .match-item.sel{background:var(--yellow-soft);border-color:var(--yellow)}
 .match-item.done{opacity:.45;pointer-events:none;border-style:dashed}
 .match-item.correct{background:var(--green-soft);border-color:var(--green)}
-.match-item.wrong{background:#f8ddd6;border-color:var(--red)}
+.match-item.wrong{background:var(--wrong-bg);border-color:var(--red)}
 
 .order-list{display:flex;flex-direction:column;gap:8px;margin-top:4px}
 .order-item{
@@ -354,7 +456,7 @@ body{
 .order-item .grip{cursor:grab;font-family:"JetBrains Mono",monospace;color:var(--ink-faint)}
 .order-item .num{font-family:"JetBrains Mono",monospace;font-weight:600;color:var(--fach-color);width:18px}
 .order-item.correct{background:var(--green-soft);border-color:var(--green)}
-.order-item.wrong{background:#f8ddd6;border-color:var(--red)}
+.order-item.wrong{background:var(--wrong-bg);border-color:var(--red)}
 
 /* Leiste unten */
 .view-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:28px;align-items:center}
@@ -377,7 +479,7 @@ body{
 
 /* Modal / Hilfe */
 .modal{position:fixed;inset:0;z-index:100;display:grid;place-items:center;padding:20px;
-  background:rgba(27,51,80,.5);backdrop-filter:blur(4px)}
+  background:var(--scrim);backdrop-filter:blur(4px)}
 .modal[hidden]{display:none}
 .modal-box{position:relative;max-width:640px;width:100%;max-height:86vh;overflow:auto;
   background:var(--paper-2);border:2px solid var(--ink);border-radius:var(--radius);
