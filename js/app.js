@@ -52,6 +52,9 @@
 
   /* ---------------- Auswahl-Chips ---------------- */
   function renderChooser() {
+    var stepK = document.querySelector('.step[data-step="klasse"]');
+    var stepF = document.querySelector('.step[data-step="fach"]');
+
     // Schularten
     var cs = $("#chip-schule");
     cs.innerHTML = ORDER.map(function (sk) {
@@ -60,9 +63,13 @@
         (state.schule === sk) + '">' + sc.deco + " " + esc(sc.name) + "</button>";
     }).join("");
 
+    // Stufe 2 und 3 erst zeigen, wenn die vorherige Stufe gewählt ist
+    if (stepK) stepK.hidden = !state.schule;
+    if (stepF) stepF.hidden = !(state.schule && state.klasse);
+
     // Klassen
     var ck = $("#chip-klasse");
-    var klassen = state.schule ? C[state.schule].klassen : [5, 6, 7, 8, 9, 10];
+    var klassen = state.schule ? C[state.schule].klassen : [];
     ck.innerHTML = klassen.map(function (k) {
       return '<button class="chip" role="tab" data-klasse="' + k + '" aria-selected="' +
         (Number(state.klasse) === k) + '">Klasse ' + k + "</button>";
@@ -71,7 +78,7 @@
     // Fächer
     var cf = $("#chip-fach");
     if (!state.schule) {
-      cf.innerHTML = '<span class="hint" style="color:var(--ink-faint);font-size:14px">Bitte zuerst eine Schulart wählen.</span>';
+      cf.innerHTML = "";
     } else {
       var list = subjectList(state.schule, state.klasse);
       if (!list.length) list = subjectList(state.schule, null);
@@ -81,15 +88,6 @@
           o.sub.icon + " " + esc(o.sub.name) + "</button>";
       }).join("");
     }
-
-    // Schnellstatistik
-    var total = 0, done = 0;
-    Object.keys(progress.themes).forEach(function (k) { total++; if (progress.themes[k].done) done++; });
-    $("#quickstats").innerHTML =
-      "<span>Fächer gesamt: <b>" + countSubjects() + "</b></span>" +
-      "<span>Themen gesamt: <b>" + countThemes() + "</b></span>" +
-      "<span>Aufgaben gelöst: <b>" + progress.answered + "</b></span>" +
-      "<span>Themen geschafft: <b>" + done + "</b></span>";
 
     var fk = state.fach && C[state.schule] && C[state.schule].subjects[state.fach];
     setFachColor(fk ? fk.color : (state.schule ? C[state.schule].color : "#12386b"));
@@ -111,20 +109,29 @@
     return n;
   }
 
-  /* ---------------- HUD ---------------- */
+  /* ---------------- Fortschrittszeile (Startseite) ---------------- */
   function renderHud() {
-    $("#hud-xp").textContent = progress.xp;
-    $("#hud-done").textContent = progress.correct;
+    var el = $("#hud");
+    if (!el) return;
     var rate = progress.answered ? Math.round(progress.correct / progress.answered * 100) : null;
-    $("#hud-rate").textContent = rate === null ? "–" : rate + "%";
+    el.innerHTML =
+      '<div class="hud-item"><span>' + progress.xp + "</span><small>XP</small></div>" +
+      '<div class="hud-item"><span>' + progress.correct + "</span><small>richtig</small></div>" +
+      '<div class="hud-item"><span>' + (rate === null ? "–" : rate + "%") + "</span><small>Quote</small></div>";
   }
 
   /* ---------------- Ansichten ---------------- */
   function viewHome() {
-    var html = '<div class="hero"><h1>Üben für den <span class="accent">LehrplanPLUS</span> Bayern</h1>' +
-      '<p class="lede">Wähle oben Schulart, Jahrgangsstufe und Fach. Zu jedem Thema bekommst du ein Merkblatt, ' +
-      'Karteikarten und einen gemischten Übungssatz – Klasse 5 bis 10, Realschule, Gymnasium und Mittelschule.</p></div>';
-    html += '<div class="section-head"><h2>Schularten</h2><span class="hint">Klick auf eine Karte, um zu starten</span></div>';
+    var rate = progress.answered ? Math.round(progress.correct / progress.answered * 100) : null;
+    var html = '<section class="welcome">' +
+      '<div class="welcome-head"><h1>Willkommen beim <span class="accent">SchülerTrainer</span></h1>' +
+      '<p class="lede">Wähle oben <b>Schulart</b>, dann <b>Jahrgangsstufe</b> und <b>Fach</b>. ' +
+      'Zu jedem Thema bekommst du ein Merkblatt, Karteikarten und einen gemischten Übungssatz – ' +
+      'für alle Schularten des bayerischen LehrplanPLUS.</p></div>' +
+      '<div class="hud" id="hud" title="Dein Fortschritt"></div>' +
+      "</section>";
+    html += '<div class="section-head"><h2>Alle Schularten</h2>' +
+      '<span class="hint">Klick auf eine Karte oder wähle oben aus</span></div>';
     html += '<div class="school-grid">';
     ORDER.forEach(function (sk) {
       var sc = C[sk];
@@ -133,16 +140,20 @@
       faecher.forEach(function (k) {
         Object.keys(sc.subjects[k].themen).forEach(function (kl) { themen += sc.subjects[k].themen[kl].length; });
       });
-      html += '<button class="school-card" data-schule="' + sk + '">' +
+      var kl = sc.klassen;
+      var klTxt = kl.length === 1 ? "Klasse " + kl[0] : "Klasse " + kl[0] + "–" + kl[kl.length - 1];
+      html += '<button class="school-card" data-schule="' + sk + '" style="--schul-color:' + sc.color + '">' +
         '<span class="deco">' + sc.deco + "</span>" +
-        '<span class="tag">Schulart</span>' +
         "<h3>" + esc(sc.name) + "</h3>" +
         "<p>" + esc(sc.info) + "</p>" +
         '<span class="bar"><span class="pill">' + faecher.length + " Fächer</span>" +
         '<span class="pill">' + themen + " Themen</span>" +
-        '<span class="pill">Klasse 5–10</span></span></button>';
+        '<span class="pill">' + klTxt + "</span></span></button>";
     });
     html += "</div>";
+    html += '<p class="totals">Insgesamt <b>' + countSubjects() + "</b> Fächer und <b>" +
+      countThemes() + "</b> Themen. Bisher <b>" + progress.correct + "</b> Aufgaben richtig" +
+      (rate === null ? "" : " (" + rate + "% Quote)") + ".</p>";
     return html;
   }
 
@@ -295,6 +306,7 @@
       results: {}, cursor: 0, answered: 0, correct: 0
     };
     renderSession();
+    updateChooserVisibility();
   }
 
   function renderSession() {
@@ -552,15 +564,24 @@
     session = null;
     if (parts[0] === "s" && parts[1]) {
       state.schule = C[parts[1]] ? parts[1] : null;
-      state.klasse = parts[2] ? Number(parts[2]) : state.klasse;
+      // "null"/"undefined"/Unbekanntes aus der URL abfangen, sonst wird die
+      // Klasse zu NaN und alle Themen-Zahlen zerfallen zu "0 Themen für Klasse NaN".
+      var kl = Number(parts[2]);
+      state.klasse = state.schule && parts[2] && C[state.schule].klassen.indexOf(kl) !== -1
+        ? kl : (state.schule ? state.klasse : null);
+      if (state.klasse != null && state.schule &&
+          C[state.schule].klassen.indexOf(Number(state.klasse)) === -1) {
+        state.klasse = null;
+      }
       state.fach = parts[3] && C[state.schule].subjects[parts[3]] ? parts[3] : null;
-      if (state.fach && parts[2] &&
-          C[state.schule].subjects[state.fach].klassen.indexOf(Number(parts[2])) === -1) {
+      if (state.fach && !state.klasse) {
+        state.klasse = C[state.schule].subjects[state.fach].klassen[0];
+      } else if (state.fach &&
+          C[state.schule].subjects[state.fach].klassen.indexOf(Number(state.klasse)) === -1) {
         state.fach = null;
       }
     }
     renderChooser();
-    renderHud();
     var v = $("#view");
     if (parts[0] === "s" && parts[1] && state.fach && parts[4] != null) {
       v.innerHTML = viewTheme(Number(parts[4]));
@@ -573,7 +594,19 @@
     } else {
       v.innerHTML = viewHome();
     }
+    renderHud();
+    updateChooserVisibility();
     window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  // Die Auswahl erscheint nur auf der Startseite. Auf allen anderen Seiten
+  // bleibt oben Platz: man navigiert über Breadcrumbs bzw. "Auswahl ändern".
+  function updateChooserVisibility() {
+    var c = $("#chooser");
+    var btn = $("#btn-auswahl");
+    var onHome = !!$(".welcome");
+    if (c) c.hidden = !onHome;
+    if (btn) btn.hidden = onHome;
   }
 
   function go(hash) { location.hash = hash; }
@@ -584,22 +617,46 @@
       var chip = e.target.closest(".chip");
       if (chip) {
         if (chip.dataset.schule) {
-          state.schule = chip.dataset.schule; state.fach = null;
-          go("#/s/" + state.schule + (state.klasse ? "/" + state.klasse : ""));
+          state.schule = chip.dataset.schule;
+          state.klasse = null;
+          state.fach = null;
+          go("#/");
+          renderChooser();
         } else if (chip.dataset.klasse) {
           state.klasse = Number(chip.dataset.klasse);
-          if (state.schule) go("#/s/" + state.schule + "/" + state.klasse);
-          else { renderChooser(); }
+          state.fach = null;
+          renderChooser();
         } else if (chip.dataset.fach) {
           state.fach = chip.dataset.fach;
+          var sub = state.schule && C[state.schule].subjects[state.fach];
+          if (sub && (!state.klasse || sub.klassen.indexOf(Number(state.klasse)) === -1)) {
+            state.klasse = sub.klassen[0];
+          }
           go("#/s/" + state.schule + "/" + state.klasse + "/" + state.fach);
         }
         return;
       }
       var sc = e.target.closest(".school-card");
-      if (sc && sc.dataset.schule) { go("#/s/" + sc.dataset.schule); return; }
+      if (sc && sc.dataset.schule) {
+        state.schule = sc.dataset.schule;
+        state.klasse = null;
+        state.fach = null;
+        go("#/");
+        renderChooser();
+        var c = $("#chooser");
+        if (c) c.scrollIntoView({ behavior: "smooth", block: "start" });
+        return;
+      }
       var gf = e.target.closest("[data-gofach]");
-      if (gf) { go("#/s/" + state.schule + "/" + state.klasse + "/" + gf.dataset.gofach); return; }
+      if (gf) {
+        state.fach = gf.dataset.gofach;
+        var gsub = state.schule && C[state.schule].subjects[state.fach];
+        if (gsub && (!state.klasse || gsub.klassen.indexOf(Number(state.klasse)) === -1)) {
+          state.klasse = gsub.klassen[0];
+        }
+        go("#/s/" + state.schule + "/" + state.klasse + "/" + state.fach);
+        return;
+      }
       var tc = e.target.closest("[data-theme]");
       if (tc) { go("#/s/" + state.schule + "/" + state.klasse + "/" + state.fach + "/" + tc.dataset.theme); return; }
 
@@ -628,6 +685,13 @@
       runSearch(state.search);
     });
     $("#btn-help").addEventListener("click", openHelp);
+    $("#btn-auswahl").addEventListener("click", function () {
+      go("#/");
+      setTimeout(function () {
+        var c = $("#chooser");
+        if (c) c.scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 60);
+    });
     $("#modal-close").addEventListener("click", closeModal);
     $("#modal").addEventListener("click", function (e) { if (e.target.id === "modal") closeModal(); });
     document.addEventListener("keydown", function (e) { if (e.key === "Escape") closeModal(); });
@@ -694,11 +758,11 @@
   /* ---------------- Hilfe ---------------- */
   function openHelp() {
     $("#modal-body").innerHTML =
-      "<h2>So funktioniert der LehrplanTrainer</h2>" +
-      "<p>Diese Seite übt die Inhalte des bayerischen Lehrplans <strong>LehrplanPLUS</strong> für " +
-      "Realschule, Gymnasium und Mittelschule, Klasse 5 bis 10.</p>" +
-      "<h3>1. Auswählen</h3><p>Oben wählst du Schulart, Jahrgangsstufe und Fach. Über das Suchfeld findest du " +
-      "Themen auch direkt, z. B. „Bruch“, „Satzglieder“ oder „Photosynthese“.</p>" +
+      "<h2>So funktioniert der SchülerTrainer</h2>" +
+      "<p>Diese Seite übt die Inhalte des bayerischen Lehrplans <strong>LehrplanPLUS</strong> – " +
+      "für alle Schularten von der Grundschule bis zur Berufsoberschule.</p>" +
+      "<h3>1. Auswählen</h3><p>Auf der Startseite wählst du nacheinander Schulart, Jahrgangsstufe und Fach. " +
+      "Über das Suchfeld findest du Themen auch direkt, z. B. „Bruch“, „Satzglieder“ oder „Photosynthese“.</p>" +
       "<h3>2. Merkblatt lesen</h3><p>Jedes Thema hat ein Merkblatt mit den wichtigsten Begriffen und Regeln.</p>" +
       "<h3>3. Üben</h3><p>Der Übungssatz mischt vier Aufgabentypen: " +
       "<code>Multiple Choice</code>, <code>Lückentext/Zahl eingeben</code>, <code>Zuordnen</code> und " +
@@ -707,7 +771,8 @@
       "<h3>4. Fortschritt</h3><p>Richtige Antworten bringen XP. Ab 60 % gilt ein Thema als geschafft. " +
       "Der Fortschritt wird nur lokal im Browser gespeichert.</p>" +
       "<h3>Quelle</h3><p>Lehrplanstruktur nach <a href=\"https://www.lehrplanplus.bayern.de\" target=\"_blank\" rel=\"noopener\">lehrplanplus.bayern.de</a> " +
-      "(Staatsinstitut für Schulqualität und Bildungsforschung, ISB). Die Aufgaben sind eigene Übungen.</p>";
+      "(Staatsinstitut für Schulqualität und Bildungsforschung, ISB). Die Aufgaben sind eigene Übungen. " +
+      "© Hmm.</p>";
     $("#modal").hidden = false;
   }
   function closeModal() { $("#modal").hidden = true; }

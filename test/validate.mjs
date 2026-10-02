@@ -5,9 +5,14 @@ import vm from "node:vm";
 
 const files = [
   "data/schools.js",
+  "data/subjects-grundschule.js",
+  "data/subjects-mittelschule.js",
+  "data/subjects-foerderschule.js",
   "data/subjects-realschule.js",
   "data/subjects-gymnasium.js",
-  "data/subjects-mittelschule.js",
+  "data/subjects-wirtschaftsschule.js",
+  "data/subjects-fachoberschule.js",
+  "data/subjects-berufsoberschule.js",
   "data/curriculum.js",
   "js/engine.js",
 ];

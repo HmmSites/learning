@@ -97,6 +97,34 @@ body{
   transition:transform .15s, background .15s, color .15s;
 }
 .icon-btn:hover{background:var(--ink);color:var(--paper);transform:translateY(-2px) rotate(-6deg)}
+.ghost-btn{
+  font-family:"Karla",sans-serif;font-weight:700;font-size:13.5px;
+  padding:8px 15px;border-radius:999px;cursor:pointer;
+  background:var(--paper-2);color:var(--ink);
+  border:1.5px solid var(--line-strong);box-shadow:var(--shadow-1);
+  transition:transform .12s, background .15s, color .15s;
+}
+.ghost-btn:hover{background:var(--ink);color:var(--paper-2);transform:translateY(-2px)}
+
+/* ===================== Willkommen (Startseite) ===================== */
+.welcome{
+  background:var(--paper-2);border:1.5px solid var(--line-strong);
+  border-radius:var(--radius);box-shadow:var(--shadow-1);
+  padding:28px clamp(20px,3vw,34px);margin-bottom:34px;
+  position:relative;overflow:hidden;
+}
+.welcome::before{
+  content:"";position:absolute;inset:0 auto 0 0;width:6px;
+  background:linear-gradient(180deg,var(--red),var(--yellow));
+}
+.welcome-head h1{margin:0 0 10px}
+.welcome .lede{font-size:17.5px;color:var(--ink-soft);max-width:70ch;margin:0}
+.welcome .hud{margin-top:20px;display:inline-flex}
+.totals{
+  margin:26px 0 0;font-size:14px;color:var(--ink-faint);
+  border-top:1.5px dashed var(--line-strong);padding-top:14px;
+}
+.totals b{color:var(--pen);font-family:"JetBrains Mono",monospace}
 
 /* ===================== Auswahlbereich ===================== */
 .chooser{
@@ -106,9 +134,10 @@ body{
 .chooser-inner{
   max-width:var(--maxw);margin:0 auto;
   padding:22px clamp(16px,4vw,40px) 4px;
-  display:grid;grid-template-columns:minmax(230px,1fr) 1.25fr 2fr;gap:26px;
+  display:flex;flex-wrap:wrap;gap:22px 30px;
 }
-.step{min-width:0}
+.step{flex:1 1 240px;min-width:0}
+.step[hidden]{display:none}
 .step-label{
   display:flex;align-items:center;gap:8px;margin-bottom:9px;
   font-family:"Fraunces",serif;font-weight:600;font-size:15px;color:var(--ink);
@@ -334,13 +363,13 @@ body{
 .school-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px}
 .school-card{
   cursor:pointer;font:inherit;text-align:left;color:inherit;
-  border:2px solid var(--ink);border-radius:var(--radius);background:var(--paper-2);
+  border:2px solid var(--ink);border-left:6px solid var(--schul-color,var(--ink));
+  border-radius:var(--radius);background:var(--paper-2);
   padding:22px;box-shadow:var(--shadow-1);position:relative;overflow:hidden;
   transition:transform .18s, box-shadow .18s;
 }
 .school-card:hover{transform:translateY(-5px) rotate(-.4deg);box-shadow:var(--shadow-2)}
-.school-card .tag{font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-faint)}
-.school-card h3{font-family:"Fraunces",serif;font-size:24px;font-weight:800;margin:6px 0 6px;letter-spacing:-.02em}
+.school-card h3{font-family:"Fraunces",serif;font-size:23px;font-weight:800;margin:2px 0 6px;letter-spacing:-.02em}
 .school-card p{margin:0 0 14px;font-size:14.5px;color:var(--ink-soft)}
 .school-card .bar{display:flex;gap:6px;flex-wrap:wrap}
 .school-card .pill{font-size:11.5px;background:var(--paper-3);border-radius:999px;padding:3px 9px;color:var(--ink-soft)}
