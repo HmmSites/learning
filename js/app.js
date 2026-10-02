@@ -47,7 +47,7 @@
   }
 
   function setFachColor(color) {
-    document.documentElement.style.setProperty("--fach-color", color || "#12386b");
+    document.documentElement.style.setProperty("--fach-raw", color || "#12386b");
   }
 
   /* ---------------- Auswahl-Chips ---------------- */
@@ -142,7 +142,7 @@
       });
       var kl = sc.klassen;
       var klTxt = kl.length === 1 ? "Klasse " + kl[0] : "Klasse " + kl[0] + "–" + kl[kl.length - 1];
-      html += '<button class="school-card" data-schule="' + sk + '" style="--schul-color:' + sc.color + '">' +
+      html += '<button class="school-card" data-schule="' + sk + '" style="--schul-raw:' + sc.color + '">' +
         '<span class="deco">' + sc.deco + "</span>" +
         "<h3>" + esc(sc.name) + "</h3>" +
         "<p>" + esc(sc.info) + "</p>" +
@@ -194,7 +194,7 @@
         var pr = progress.themes[key];
         var pct = pr ? Math.round(pr.best / pr.total * 100) : 0;
         var check = pr && pr.done ? '<span class="check" title="geschafft">✅</span>' : "";
-        html += '<button class="theme-card" data-theme="' + i + '">' + check +
+        html += '<button class="theme-card" data-thema="' + i + '">' + check +
           "<h3>" + esc(th.t) + "</h3><p>" + esc(th.d) + "</p>" +
           '<div class="meta"><span class="count">' + (th.q ? th.q.length + " + " : "") +
           (th.f ? th.f.length : 0) + " Karten</span>" +
@@ -223,7 +223,7 @@
     html += '<div class="theme-grid">';
     subs.forEach(function (o) {
       var th = o.sub.themen[String(state.klasse)] || [];
-      html += '<button class="theme-card" data-gofach="' + o.key + '" style="--fach-color:' + o.sub.color + '">' +
+      html += '<button class="theme-card" data-gofach="' + o.key + '" style="--fach-raw:' + o.sub.color + '">' +
         "<h3>" + o.sub.icon + " " + esc(o.sub.name) + "</h3>" +
         "<p>" + th.length + " Themen für Klasse " + state.klasse + "</p>" +
         '<div class="meta"><span class="count">' + th.length + " Themen</span></div></button>";
@@ -245,7 +245,7 @@
     subs.forEach(function (o) {
       var total = 0;
       Object.keys(o.sub.themen).forEach(function (kl) { total += o.sub.themen[kl].length; });
-      html += '<button class="theme-card" data-gofach="' + o.key + '" style="--fach-color:' + o.sub.color + '">' +
+      html += '<button class="theme-card" data-gofach="' + o.key + '" style="--fach-raw:' + o.sub.color + '">' +
         "<h3>" + o.sub.icon + " " + esc(o.sub.name) + "</h3>" +
         "<p>Klassen " + o.sub.klassen.join(", ") + "</p>" +
         '<div class="meta"><span class="count">' + total + " Themen</span></div></button>";
@@ -657,8 +657,8 @@
         go("#/s/" + state.schule + "/" + state.klasse + "/" + state.fach);
         return;
       }
-      var tc = e.target.closest("[data-theme]");
-      if (tc) { go("#/s/" + state.schule + "/" + state.klasse + "/" + state.fach + "/" + tc.dataset.theme); return; }
+      var tc = e.target.closest("[data-thema]");
+      if (tc) { go("#/s/" + state.schule + "/" + state.klasse + "/" + state.fach + "/" + tc.dataset.thema); return; }
 
       if (e.target.id === "start-uebung") { startSession(Number(currentThemeIdx()), "uebung"); return; }
       if (e.target.id === "start-karten") { startSession(Number(currentThemeIdx()), "karten"); return; }
@@ -695,6 +695,7 @@
     $("#modal-close").addEventListener("click", closeModal);
     $("#modal").addEventListener("click", function (e) { if (e.target.id === "modal") closeModal(); });
     document.addEventListener("keydown", function (e) { if (e.key === "Escape") closeModal(); });
+    bindTheme();
     $("#btn-reset").addEventListener("click", function () {
       if (confirm("Fortschritt wirklich zurücksetzen?")) {
         progress = { xp: 0, answered: 0, correct: 0, themes: {} };
@@ -737,7 +738,7 @@
       html += '<div class="theme-grid">';
       results.slice(0, 60).forEach(function (r) {
         html += '<button class="theme-card" data-sr="' + r.sk + "|" + r.fk + "|" + r.kl + "|" + r.i +
-          '" style="--fach-color:' + r.sub.color + '">' +
+          '" style="--fach-raw:' + r.sub.color + '">' +
           "<h3>" + esc(r.th.t) + "</h3><p>" + esc(r.th.d) + "</p>" +
           '<div class="meta"><span class="count">' + C[r.sk].name + " · " + esc(r.sub.name) +
           " · Kl. " + r.kl + "</span></div></button>";
@@ -776,6 +777,22 @@
     $("#modal").hidden = false;
   }
   function closeModal() { $("#modal").hidden = true; }
+
+  /* ---------------- Hell-/Dunkelmodus ---------------- */
+  function bindTheme() {
+    var T = window.ThemeSwitch;
+    if (!T) return;
+    var l = $("#btn-theme-light"), d = $("#btn-theme-dark");
+    function paint() {
+      var mode = T.get();
+      if (l) l.setAttribute("aria-pressed", mode === "light");
+      if (d) d.setAttribute("aria-pressed", mode === "dark");
+    }
+    if (l) l.addEventListener("click", function () { T.set("light"); paint(); });
+    if (d) d.addEventListener("click", function () { T.set("dark"); paint(); });
+    document.addEventListener("themechange", paint);
+    paint();
+  }
 
   /* ---------------- Start ---------------- */
   bind();
